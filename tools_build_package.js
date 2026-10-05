@@ -86,6 +86,11 @@ const synB = read(W + 'THE_NEW_MISSION_벌집_시놉시스_v2.md');
 const sci = read(W + 'THE_NEW_MISSION_과학·비교_간략판.md');
 const scen = read('/root/.claude/uploads/38d207b7-bc95-5028-af5d-189dfd6f6d65/cc4d48af-THE_NEW_MISSION________________v8_9_________.md');
 const meta = JSON.parse(read(S + 'design_meta.json'));
+// section intros from THE_NEW_MISSION_장머리말.md ("## N장 머리말" blocks)
+const introsSrc = read(W + 'THE_NEW_MISSION_장머리말.md');
+const intros = {};
+introsSrc.split(/^## (\d)장 머리말\s*$/m).slice(1).forEach((v, i, arr) => { if (i % 2 === 0) intros[v] = arr[i + 1].trim(); });
+['2', '3', '5'].forEach(k => { if (!intros[k]) throw new Error('intro missing: ' + k); });
 
 const synABody = between(synA, '## 로그라인', '## 30초 버전');
 const synBBody = between(synB, '## 로그라인', '## 30초 버전');
@@ -96,7 +101,7 @@ scenBody = scenBody.replace(/^# /gm, '## ').replace(/^## 표기/m, '### 표기')
 // ---------- cover ----------
 const cover = [
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 3600, after: 200 }, children: [new TextRun({ text: 'THE NEW MISSION', bold: true, font: FONT, size: 56 })] }),
-  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: '수정 방향 제안', font: FONT, size: 30 })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: '수정 방향 제안서', font: FONT, size: 30 })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 1200 }, children: [new TextRun({ text: '2026. 10. 06', font: FONT, size: BODY, color: '555555' })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 100 }, children: [new TextRun({ text: '2026 시네마바이브랜드 : HANWHA', font: FONT, size: BODY, color: '555555' })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 1600 }, children: [new TextRun({ text: '기획 시네마직립보행 · 감독 이진호 · 프로듀서 은종훈 · 원안 구정회', font: FONT, size: BODY, color: '555555' })] }),
@@ -110,14 +115,14 @@ const part1 = [
   ...cover,
   ...md(briefing),
   new Paragraph({ heading: HeadingLevel.HEADING_1, pageBreakBefore: true, spacing: { after: 320 }, children: [new TextRun({ text: '2. 시놉시스', bold: true, font: FONT, size: 32 })] }),
-  new Paragraph({ spacing: { after: 240 }, children: runs('주안 「교신」과 병렬안 「벌집」. 둘 다 결말까지 적었다. 어느 쪽이든 20분 단편, 실사와 AI 제작이다.') }),
+  ...md(intros['2'], { h1: 'plain' }),
   new Paragraph({ heading: HeadingLevel.HEADING_2, spacing: { before: 200, after: 160 }, children: [new TextRun({ text: '2-1  주안 「교신」 · SF 휴먼 드라마', bold: true, font: FONT, size: 28 })] }),
   ...md(synABody),
   new Paragraph({ heading: HeadingLevel.HEADING_2, pageBreakBefore: true, spacing: { before: 0, after: 160 }, children: [new TextRun({ text: '2-2  병렬안 「벌집」 · SF 어드벤처', bold: true, font: FONT, size: 28 })] }),
   ...md(synBBody),
   // design intro (portrait)
   new Paragraph({ heading: HeadingLevel.HEADING_1, pageBreakBefore: true, spacing: { after: 320 }, children: [new TextRun({ text: '3. 디자인. 꿀벌1호 변형 시안 여덟', bold: true, font: FONT, size: 32 })] }),
-  new Paragraph({ spacing: { after: 200, line: 320 }, children: runs('피칭 때 보인 캐릭터가 「월-E」를 떠올리게 한다는 지적에 대한 답이다. 여덟 안 모두 두 눈을 나란히 붙인 쌍안경 머리를 쓰지 않는다. 렌즈는 하나이거나 아예 없고, 표정은 태양광 날개의 기울기와 붉은 점 하나로 낸다. 각 장에 설계도 한 장과 실사형 이미지 둘(우주, 제작실), 그리고 피칭 때 캐릭터와의 원경 실루엣 비교를 붙였다.') }),
+  ...md(intros['3'], { h1: 'plain' }),
   ...meta.map((m, i) => new Paragraph({ numbering: { reference: 'bullets', level: 0 }, spacing: { after: 80 }, children: runs(`**${m.n}.** ${m.title}`) })),
 ];
 
@@ -142,7 +147,7 @@ const part3 = [
   new Paragraph({ heading: HeadingLevel.HEADING_1, spacing: { after: 320 }, children: [new TextRun({ text: '4. 과학적 고려와 다른 작품과의 거리', bold: true, font: FONT, size: 32 })] }),
   ...md(sciBody),
   new Paragraph({ heading: HeadingLevel.HEADING_1, pageBreakBefore: true, spacing: { after: 160 }, children: [new TextRun({ text: '5. 부록. 시나리오 「교신」 v8.9', bold: true, font: FONT, size: 32 })] }),
-  new Paragraph({ spacing: { after: 240 }, children: runs('주안 「교신」의 시나리오 전문이다. 1장에서 4장까지만으로 판단할 수 있게 썼고, 이 부록은 확인용이다. 러닝타임 약 20분, 남자판.', { color: '555555' }) }),
+  ...md(intros['5'], { h1: 'plain' }),
   ...md(scenBody, { h1: 'plain' }),
 ];
 
